@@ -190,7 +190,7 @@
 - (void)setMirror:(BOOL)mirror {
   if (_mirror != mirror) {
       _mirror = mirror;
-      
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -209,7 +209,7 @@
 - (void)setObjectFit:(RTCVideoViewObjectFit)objectFit {
   if (_objectFit != objectFit) {
       _objectFit = objectFit;
-      
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -235,7 +235,7 @@
       });
       _videoSize.height = 0;
       _videoSize.width = 0;
-      
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -274,7 +274,7 @@
 - (void)videoView:(id<RTCVideoRenderer>)videoView didChangeVideoSize:(CGSize)size {
   if (videoView == self.videoView) {
     _videoSize = size;
-    
+
     #if !TARGET_OS_OSX
           [self setNeedsLayout];
     #else
@@ -287,8 +287,6 @@
 
 @implementation RTCVideoViewManager
 
-RCT_EXPORT_MODULE()
-
 #if !TARGET_OS_OSX
 - (UIView *)view {
 #else
@@ -299,39 +297,43 @@ RCT_EXPORT_MODULE()
 #if !TARGET_OS_OSX
   v.clipsToBounds = YES;
 #endif
+  self.v = v;
   return v;
 }
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
-}
-
-RCT_EXPORT_VIEW_PROPERTY(mirror, BOOL)
-
+     return dispatch_get_main_queue();
+ }
 /**
  * In the fashion of
  * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
  * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
  * the CSS style {@code object-fit}.
  */
-RCT_CUSTOM_VIEW_PROPERTY(objectFit, NSString *, RTCVideoView) {
-  NSString *s = [RCTConvert NSString:json];
+
+- (void)setMirror:(BOOL)mirror {
+    self.v.mirror = mirror;
+}
+
+
+
+- (void)setObjectFit:(NSString *)objectFit {
+  NSString *s = [RCTConvert NSString:objectFit];
   RTCVideoViewObjectFit e
     = (s && [s isEqualToString:@"cover"])
       ? RTCVideoViewObjectFitCover
       : RTCVideoViewObjectFitContain;
 
-  view.objectFit = e;
-}
+    self.v.objectFit = e;
+ }
 
-RCT_CUSTOM_VIEW_PROPERTY(streamURL, NSString *, RTCVideoView) {
-    if (!json) {
-        view.videoTrack = nil;
+- (void)setStreamURL:(NSString *)streamURL {
+    if (!streamURL) {
+        self.v.videoTrack = nil;
         return;
     }
-
-    NSString *streamReactTag = (NSString *)json;
-    WebRTCModule *module = view.module;
+    NSString *streamReactTag = (NSString *)streamURL;
+    WebRTCModule *module = self.v.module;
 
     dispatch_async(module.workerQueue, ^{
         RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
@@ -341,11 +343,11 @@ RCT_CUSTOM_VIEW_PROPERTY(streamURL, NSString *, RTCVideoView) {
             RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                view.videoTrack = videoTrack;
+                self.v.videoTrack = videoTrack;
             });
         }
     });
-}
+ }
 
 + (BOOL)requiresMainQueueSetup
 {

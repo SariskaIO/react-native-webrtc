@@ -61,5 +61,3 @@
 @property (nonatomic, weak) WebRTCModule *module;
 
 @end
-
-
