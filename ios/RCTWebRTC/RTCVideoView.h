@@ -29,7 +29,7 @@
  * the video specified by {@link #videoTrack} during its rendering. Typically,
  * applications choose to mirror the front/user-facing camera.
  */
-@property (nonatomic) BOOL mirror;
+@property (nonatomic) BOOL mirror1;
 
 /**
  * In the fashion of
@@ -37,7 +37,7 @@
  * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
  * the CSS style {@code object-fit}.
  */
-@property (nonatomic) RTCVideoViewObjectFit objectFit;
+@property (nonatomic) RTCVideoViewObjectFit objectFit1;
 
 /**
  * The {@link RRTCVideoRenderer} which implements the actual rendering and which

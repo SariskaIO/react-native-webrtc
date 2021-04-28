@@ -134,7 +134,7 @@
   CGRect newValue;
   if (width <= 0 || height <= 0) {
     newValue = self.bounds;
-  } else if (RTCVideoViewObjectFitCover == self.objectFit) { // cover
+  } else if (RTCVideoViewObjectFitCover == self.objectFit1) { // cover
     newValue = self.bounds;
     // Is there a real need to scale subview?
     if (newValue.size.width != width || newValue.size.height != height) {
@@ -175,7 +175,7 @@
     subview.frame = newValue;
   }
 
-  [subview.layer setAffineTransform:self.mirror
+  [subview.layer setAffineTransform:self.mirror1
   ? CGAffineTransformMakeScale(-1.0, 1.0)
                                    : CGAffineTransformIdentity];
 }
@@ -188,8 +188,8 @@
  * {@code RTCVideoView}.
  */
 - (void)setMirror:(BOOL)mirror {
-  if (_mirror != mirror) {
-      _mirror = mirror;
+  if (_mirror1 != mirror) {
+      _mirror1 = mirror;
 
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
@@ -205,7 +205,7 @@
         return;
     }
     NSString *streamReactTag = (NSString *)streamURL;
-    WebRTCModule *module = self.v.module;
+    WebRTCModule *module = self.module;
 
     dispatch_async(module.workerQueue, ^{
         RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
@@ -228,13 +228,14 @@
  * {@code RTCVideoView}.
  */
 - (void)setObjectFit:(NSString *)objectFit {
+    NSString *s = [RCTConvert NSString:objectFit];
     RTCVideoViewObjectFit e
-      = (objectFit && [objectFit isEqualToString:@"cover"])
+      = (s && [s isEqualToString:@"cover"])
         ? RTCVideoViewObjectFitCover
         : RTCVideoViewObjectFitContain;
     
-  if (_objectFit != e) {
-      _objectFit = e;
+  if (_objectFit1 != e) {
+      _objectFit1 = e;
 
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
@@ -344,13 +345,13 @@
 
 
 - (void)setObjectFit:(NSString *)objectFit {
-  NSString *s = [RCTConvert NSString:objectFit];
-  RTCVideoViewObjectFit e
-    = (s && [s isEqualToString:@"cover"])
-      ? RTCVideoViewObjectFitCover
-      : RTCVideoViewObjectFitContain;
-
-    self.v.objectFit = e;
+//  NSString *s = [RCTConvert NSString:objectFit];
+//  RTCVideoViewObjectFit e
+//    = (s && [s isEqualToString:@"cover"])
+//      ? RTCVideoViewObjectFitCover
+//      : RTCVideoViewObjectFitContain;
+//
+//    self.v.objectFit = e;
  }
 
 - (void)setStreamURL:(NSString *)streamURL {
