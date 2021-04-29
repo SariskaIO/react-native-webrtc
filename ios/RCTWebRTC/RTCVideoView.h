@@ -17,6 +17,8 @@
 #import "WebRTCModule.h"
 #import "RTCVideoView.h"
 #import "Enum.h"
+#import <React/RCTBridge.h>
+
 
 #if !TARGET_OS_OSX
 @interface RTCVideoView : UIView <RTCVideoViewDelegate>
@@ -60,7 +62,7 @@
  */
 @property (nonatomic, weak) WebRTCModule *module;
 
-- (void)setStreamURL:(NSString *)streamURL;
+- (void)setStreamURL:(NSString *)streamURL bridge: (RCTBridge *) bridge;
 - (void)setObjectFit:(NSString *)objectFit;
 - (void)setMirror:(BOOL)mirror;
 

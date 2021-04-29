@@ -7,6 +7,7 @@
 //
 #import <AVFoundation/AVFoundation.h>
 #import <objc/runtime.h>
+#import <React/RCTBridge.h>
 
 #import <React/RCTLog.h>
 #if !TARGET_OS_OSX
@@ -198,15 +199,16 @@
       #endif
   }
 }
-
-- (void)setStreamURL:(NSString *)streamURL {
+    
+- (void)setStreamURL:(NSString *)streamURL bridge: (RCTBridge *) bridge {
     if (!streamURL) {
         self.videoTrack = nil;
         return;
     }
     NSString *streamReactTag = (NSString *)streamURL;
-    WebRTCModule *module = self.module;
-
+    WebRTCModule *module = [bridge moduleForName:@"WebRTCModule"];
+    _module = module;
+    NSLog(@"%@",module.workerQueue);
     dispatch_async(module.workerQueue, ^{
         RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
         NSArray *videoTracks = stream ? stream.videoTracks : @[];
@@ -228,9 +230,8 @@
  * {@code RTCVideoView}.
  */
 - (void)setObjectFit:(NSString *)objectFit {
-    NSString *s = [RCTConvert NSString:objectFit];
     RTCVideoViewObjectFit e
-      = (s && [s isEqualToString:@"cover"])
+      = (objectFit && [objectFit isEqualToString:@"cover"])
         ? RTCVideoViewObjectFitCover
         : RTCVideoViewObjectFitContain;
     
@@ -308,77 +309,6 @@
           self.needsLayout = YES;
     #endif
   }
-}
-
-@end
-
-@implementation RTCVideoViewManager
-
-#if !TARGET_OS_OSX
-- (UIView *)view {
-#else
-- (NSView *)view {
-#endif
-  RTCVideoView *v = [[RTCVideoView alloc] init];
-  v.module = [self.bridge moduleForName:@"WebRTCModule"];
-#if !TARGET_OS_OSX
-  v.clipsToBounds = YES;
-#endif
-  self.v = v;
-  return v;
-}
-
-- (dispatch_queue_t)methodQueue {
-     return dispatch_get_main_queue();
- }
-/**
- * In the fashion of
- * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
- * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
- * the CSS style {@code object-fit}.
- */
-
-- (void)setMirror:(BOOL)mirror {
-    self.v.mirror = mirror;
-}
-
-
-
-- (void)setObjectFit:(NSString *)objectFit {
-//  NSString *s = [RCTConvert NSString:objectFit];
-//  RTCVideoViewObjectFit e
-//    = (s && [s isEqualToString:@"cover"])
-//      ? RTCVideoViewObjectFitCover
-//      : RTCVideoViewObjectFitContain;
-//
-//    self.v.objectFit = e;
- }
-
-- (void)setStreamURL:(NSString *)streamURL {
-    if (!streamURL) {
-        self.v.videoTrack = nil;
-        return;
-    }
-    NSString *streamReactTag = (NSString *)streamURL;
-    WebRTCModule *module = self.v.module;
-
-    dispatch_async(module.workerQueue, ^{
-        RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
-        NSArray *videoTracks = stream ? stream.videoTracks : @[];
-        RTCVideoTrack *videoTrack = [videoTracks firstObject];
-        if (!videoTrack) {
-            RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.v.videoTrack = videoTrack;
-            });
-        }
-    });
- }
-
-+ (BOOL)requiresMainQueueSetup
-{
-    return NO;
 }
 
 @end
