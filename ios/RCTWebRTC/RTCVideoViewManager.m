@@ -21,7 +21,6 @@
 #endif
 #import <WebRTC/RTCVideoTrack.h>
 
-#import "RTCVideoViewManager.h"
 #import "WebRTCModule.h"
 #import "RTCVideoView.h"
 #import "Enum.h"
