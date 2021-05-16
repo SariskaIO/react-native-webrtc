@@ -47,7 +47,6 @@
 		4EE3A8A225B840DA00FAA24A /* RCTConvert+WebRTC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+WebRTC.h"; path = "RCTWebRTC/RCTConvert+WebRTC.h"; sourceTree = SOURCE_ROOT; };
 		4EE3A8A525B8411400FAA24A /* RTCMediaStreamTrack+React.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RTCMediaStreamTrack+React.h"; path = "RCTWebRTC/RTCMediaStreamTrack+React.h"; sourceTree = SOURCE_ROOT; };
 		4EE3A8A625B8411400FAA24A /* RTCMediaStreamTrack+React.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RTCMediaStreamTrack+React.m"; path = "RCTWebRTC/RTCMediaStreamTrack+React.m"; sourceTree = SOURCE_ROOT; };
-		4EE3A8AA25B8412700FAA24A /* RTCVideoViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RTCVideoViewManager.h; path = RCTWebRTC/RTCVideoViewManager.h; sourceTree = SOURCE_ROOT; };
 		4EE3A8AB25B8412700FAA24A /* RTCVideoViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RTCVideoViewManager.m; path = RCTWebRTC/RTCVideoViewManager.m; sourceTree = SOURCE_ROOT; };
 		4EE3A8AF25B8413200FAA24A /* VideoCaptureController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoCaptureController.h; path = RCTWebRTC/VideoCaptureController.h; sourceTree = SOURCE_ROOT; };
 		4EE3A8B025B8414000FAA24A /* WebRTCModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebRTCModule.m; path = RCTWebRTC/WebRTCModule.m; sourceTree = SOURCE_ROOT; };
@@ -112,7 +111,6 @@
 				4EE3A8A125B840DA00FAA24A /* RCTConvert+WebRTC.m */,
 				4EE3A8A525B8411400FAA24A /* RTCMediaStreamTrack+React.h */,
 				4EE3A8A625B8411400FAA24A /* RTCMediaStreamTrack+React.m */,
-				4EE3A8AA25B8412700FAA24A /* RTCVideoViewManager.h */,
 				4EE3A8AB25B8412700FAA24A /* RTCVideoViewManager.m */,
 				4EE3A8AF25B8413200FAA24A /* VideoCaptureController.h */,
 				0BDDA6DF20C18B6B00B38B45 /* VideoCaptureController.m */,
