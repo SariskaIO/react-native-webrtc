@@ -24,11 +24,11 @@
 #import "WebRTCModule.h"
 #import "Enum.h"
 #import <React/RCTBridge.h>
-#import "RTCVideoViewPrivate.h"
+#import "RTCVideoView+Private.h"
 #import "Enum.h"
 
 
-@implementation RTCVideoViewPrivate {
+@implementation RTCVideoView (Private) {
   /**
    * The width and height of the video (frames) rendered by {@link #subview}.
    */

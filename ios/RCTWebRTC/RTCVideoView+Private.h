@@ -1,3 +1,10 @@
+//
+//  RTCVideoView+Private.h
+//  RCTWebRTC
+//
+//  Created by brajendra  kumar on 17/05/21.
+//
+
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
@@ -18,7 +25,8 @@
 #import "Enum.h"
 #import <React/RCTBridge.h>
 
-@interface RTCVideoViewPrivate: RTCVideoView
+
+@interface RTCVideoView (Private)
 
 @property (nonatomic) BOOL mirror1;
 @property (nonatomic, weak) WebRTCModule *module;
@@ -34,4 +42,3 @@
 @property (nonatomic, strong) RTCVideoTrack *videoTrack;
 
 @end
-
