@@ -19,7 +19,7 @@
 #import "Enum.h"
 #import <React/RCTBridge.h>
 
-@interface RCTVideoViewPrivate: RCTVideoView
+@interface RTCVideoViewPrivate: RTCVideoView
 
 @property (nonatomic) BOOL mirror1;
 @property (nonatomic, weak) WebRTCModule *module;
@@ -35,3 +35,4 @@
 @property (nonatomic, strong) RTCVideoTrack *videoTrack;
 
 @end
+
