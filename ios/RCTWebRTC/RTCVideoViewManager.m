@@ -27,23 +27,6 @@
 #import "RTCVideoView.h"
 #import "Enum.h"
 
-@interface RTCVideoView()
-
-@property (nonatomic) BOOL mirror1;
-@property (nonatomic, weak) WebRTCModule *module;
-- (void)setStreamURL:(NSString *)streamURL bridge: (RCTBridge *) bridge;
-@property (nonatomic) RTCVideoViewObjectFit objectFit1;
-
-#if !TARGET_OS_OSX
-@property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoView;
-#else
-@property (nonatomic, readonly) __kindof NSView<RTCVideoRenderer> *videoView;
-#endif
-
-@property (nonatomic, strong) RTCVideoTrack *videoTrack;
-
-@end
-
 
 @implementation RTCVideoView {
   /**
