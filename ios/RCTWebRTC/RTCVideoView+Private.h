@@ -26,7 +26,7 @@
 #import <React/RCTBridge.h>
 
 
-@interface RTCVideoView (Private)
+@interface RTCVideoView ()
 
 @property (nonatomic) BOOL mirror1;
 @property (nonatomic, weak) WebRTCModule *module;

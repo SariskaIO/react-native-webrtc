@@ -28,12 +28,13 @@
 #import "Enum.h"
 
 
-@implementation RTCVideoView (Private) {
+@implementation RTCVideoView {
   /**
    * The width and height of the video (frames) rendered by {@link #subview}.
    */
   CGSize _videoSize;
 }
+
 
 @synthesize videoView = _videoView;
 
