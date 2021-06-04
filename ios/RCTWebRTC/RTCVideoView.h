@@ -60,4 +60,8 @@
  */
 @property (nonatomic, weak) WebRTCModule *module;
 
+- (void)setStreamURL:(NSString *)streamURL;
+- (void)setObjectFit:(NSString *)objectFit;
+- (void)setMirror:(BOOL)mirror;
+
 @end

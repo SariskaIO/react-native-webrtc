@@ -199,6 +199,27 @@
   }
 }
 
+- (void)setStreamURL:(NSString *)streamURL {
+    if (!streamURL) {
+        self.videoTrack = nil;
+        return;
+    }
+    NSString *streamReactTag = (NSString *)streamURL;
+    WebRTCModule *module = self.v.module;
+
+    dispatch_async(module.workerQueue, ^{
+        RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
+        NSArray *videoTracks = stream ? stream.videoTracks : @[];
+        RTCVideoTrack *videoTrack = [videoTracks firstObject];
+        if (!videoTrack) {
+            RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.videoTrack = videoTrack;
+            });
+        }
+    });
+ }
 /**
  * Implements the setter of the {@link #objectFit} property of this
  * {@code RTCVideoView}.
@@ -206,9 +227,14 @@
  * @param objectFit The value to set on the {@code objectFit} property of this
  * {@code RTCVideoView}.
  */
-- (void)setObjectFit:(RTCVideoViewObjectFit)objectFit {
-  if (_objectFit != objectFit) {
-      _objectFit = objectFit;
+- (void)setObjectFit:(NSString *)objectFit {
+    RTCVideoViewObjectFit e
+      = (objectFit && [objectFit isEqualToString:@"cover"])
+        ? RTCVideoViewObjectFitCover
+        : RTCVideoViewObjectFitContain;
+    
+  if (_objectFit != e) {
+      _objectFit = e;
 
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
