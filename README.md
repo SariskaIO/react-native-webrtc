@@ -15,7 +15,7 @@ Everyone is welcome to our [Discourse community](https://react-native-webrtc.dis
 
 ## WebRTC Revision
 
-* Currently used revision: [M89](https://github.com/jitsi/webrtc/commit/7ba1fdf35209c4cf5d2aa47d1507e097f88a07ac)
+* Currently used revision: [M94](https://github.com/jitsi/webrtc/releases/tag/v94.0.0)
 * Supported architectures
   * Android: armeabi-v7a, arm64-v8a, x86, x86_64
   * iOS: arm64, x86_64 (for bitcode support, run [this script](https://github.com/react-native-webrtc/react-native-webrtc/blob/master/tools/downloadBitcode.sh))
@@ -116,6 +116,7 @@ Rendering RTCView.
 By calling this method the JavaScript global namespace gets "polluted" with the following additions:
 
 * `navigator.mediaDevices.getUserMedia()`
+* `navigator.mediaDevices.getDisplayMedia()`
 * `navigator.mediaDevices.enumerateDevices()`
 * `window.RTCPeerConnection`
 * `window.RTCIceCandidate`
@@ -140,6 +141,8 @@ it back to `true` will re-enable the camera.
 ## Related projects
 
 The [react-native-webrtc](https://github.com/react-native-webrtc) organization provides a number of packages which are useful when developing Real Time Communications applications.
+
+The [react-native-webrtc-web-shim](https://github.com/react-native-webrtc/react-native-webrtc-web-shim) project provides a shim for react-native-web support, allowing you to use [(almost)](https://github.com/react-native-webrtc/react-native-webrtc-web-shim/tree/main#setup) the same code in react-native-web as in react-native.
 
 ## Acknowledgements
 
