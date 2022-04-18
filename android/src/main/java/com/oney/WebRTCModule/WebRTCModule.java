@@ -440,7 +440,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private MediaStreamTrack getTrack(String trackId) {
+    public MediaStreamTrack getTrack(String trackId) {
         MediaStreamTrack track = getLocalTrack(trackId);
 
         if (track == null) {
