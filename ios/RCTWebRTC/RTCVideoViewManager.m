@@ -8,6 +8,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <objc/runtime.h>
 
+
 #import <React/RCTLog.h>
 #if !TARGET_OS_OSX
 #import <WebRTC/RTCEAGLVideoView.h>
@@ -20,80 +21,12 @@
 #endif
 #import <WebRTC/RTCVideoTrack.h>
 
-#import "RTCVideoViewManager.h"
 #import "WebRTCModule.h"
+#import "Enum.h"
+#import <React/RCTBridge.h>
+#import "RTCVideoView+Private.h"
+#import "Enum.h"
 
-/**
- * In the fashion of
- * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
- * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
- * the CSS style {@code object-fit}.
- */
-typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
-  /**
-   * The contain value defined by https://www.w3.org/TR/css3-images/#object-fit:
-   *
-   * The replaced content is sized to maintain its aspect ratio while fitting
-   * within the element's content box.
-   */
-  RTCVideoViewObjectFitContain,
-  /**
-   * The cover value defined by https://www.w3.org/TR/css3-images/#object-fit:
-   *
-   * The replaced content is sized to maintain its aspect ratio while filling
-   * the element's entire content box.
-   */
-  RTCVideoViewObjectFitCover
-};
-
-/**
- * Implements an equivalent of {@code HTMLVideoElement} i.e. Web's video
- * element.
- */
-
-#if !TARGET_OS_OSX
-@interface RTCVideoView : UIView <RTCVideoViewDelegate>
-#else
-@interface RTCVideoView : NSView <RTCVideoViewDelegate>
-#endif
-
-/**
- * The indicator which determines whether this {@code RTCVideoView} is to mirror
- * the video specified by {@link #videoTrack} during its rendering. Typically,
- * applications choose to mirror the front/user-facing camera.
- */
-@property (nonatomic) BOOL mirror;
-
-/**
- * In the fashion of
- * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
- * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
- * the CSS style {@code object-fit}.
- */
-@property (nonatomic) RTCVideoViewObjectFit objectFit;
-
-/**
- * The {@link RRTCVideoRenderer} which implements the actual rendering and which
- * fits within this view so that the rendered video preserves the aspect ratio of
- * {@link #_videoSize}.
- */
-#if !TARGET_OS_OSX
-@property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoView;
-#else
-@property (nonatomic, readonly) __kindof NSView<RTCVideoRenderer> *videoView;
-#endif
-
-/**
- * The {@link RTCVideoTrack}, if any, which this instance renders.
- */
-@property (nonatomic, strong) RTCVideoTrack *videoTrack;
-
-/**
- * Reference to the main WebRTC RN module.
- */
-@property (nonatomic, weak) WebRTCModule *module;
-
-@end
 
 @implementation RTCVideoView {
   /**
@@ -101,6 +34,7 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
    */
   CGSize _videoSize;
 }
+
 
 @synthesize videoView = _videoView;
 
@@ -203,7 +137,7 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
   CGRect newValue;
   if (width <= 0 || height <= 0) {
     newValue = self.bounds;
-  } else if (RTCVideoViewObjectFitCover == self.objectFit) { // cover
+  } else if (RTCVideoViewObjectFitCover == self.objectFit1) { // cover
     newValue = self.bounds;
     // Is there a real need to scale subview?
     if (newValue.size.width != width || newValue.size.height != height) {
@@ -244,7 +178,7 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
     subview.frame = newValue;
   }
 
-  [subview.layer setAffineTransform:self.mirror
+  [subview.layer setAffineTransform:self.mirror1
   ? CGAffineTransformMakeScale(-1.0, 1.0)
                                    : CGAffineTransformIdentity];
 }
@@ -257,9 +191,9 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
  * {@code RTCVideoView}.
  */
 - (void)setMirror:(BOOL)mirror {
-  if (_mirror != mirror) {
-      _mirror = mirror;
-      
+  if (_mirror1 != mirror) {
+      _mirror1 = mirror;
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -267,7 +201,29 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
       #endif
   }
 }
-
+    
+- (void)setStreamURL:(NSString *)streamURL bridge: (RCTBridge *) bridge {
+    if (!streamURL) {
+        self.videoTrack = nil;
+        return;
+    }
+    NSString *streamReactTag = (NSString *)streamURL;
+    WebRTCModule *module = [bridge moduleForName:@"WebRTCModule"];
+    _module = module;
+    NSLog(@"%@",module.workerQueue);
+    dispatch_async(module.workerQueue, ^{
+        RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
+        NSArray *videoTracks = stream ? stream.videoTracks : @[];
+        RTCVideoTrack *videoTrack = [videoTracks firstObject];
+        if (!videoTrack) {
+            RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.videoTrack = videoTrack;
+            });
+        }
+    });
+ }
 /**
  * Implements the setter of the {@link #objectFit} property of this
  * {@code RTCVideoView}.
@@ -275,10 +231,15 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
  * @param objectFit The value to set on the {@code objectFit} property of this
  * {@code RTCVideoView}.
  */
-- (void)setObjectFit:(RTCVideoViewObjectFit)objectFit {
-  if (_objectFit != objectFit) {
-      _objectFit = objectFit;
-      
+- (void)setObjectFit:(NSString *)objectFit {
+    RTCVideoViewObjectFit e
+      = (objectFit && [objectFit isEqualToString:@"cover"])
+        ? RTCVideoViewObjectFitCover
+        : RTCVideoViewObjectFitContain;
+    
+  if (_objectFit1 != e) {
+      _objectFit1 = e;
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -304,7 +265,7 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
       });
       _videoSize.height = 0;
       _videoSize.width = 0;
-      
+
       #if !TARGET_OS_OSX
             [self setNeedsLayout];
       #else
@@ -328,10 +289,6 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
   }
 }
 
--(RTCVideoTrack *)getVideoTrackForStream:(NSString *) streamUrl{
-        return self.videoTrack;
-}
-
 #pragma mark - RTCVideoViewDelegate methods
 
 /**
@@ -347,82 +304,13 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
 - (void)videoView:(id<RTCVideoRenderer>)videoView didChangeVideoSize:(CGSize)size {
   if (videoView == self.videoView) {
     _videoSize = size;
-    
+
     #if !TARGET_OS_OSX
           [self setNeedsLayout];
     #else
           self.needsLayout = YES;
     #endif
   }
-}
-
-@end
-
-@implementation RTCVideoViewManager
-
-RCT_EXPORT_MODULE()
-
-#if !TARGET_OS_OSX
-- (UIView *)view {
-#else
-- (NSView *)view {
-#endif
-  RTCVideoView *v = [[RTCVideoView alloc] init];
-  v.module = [self.bridge moduleForName:@"WebRTCModule"];
-#if !TARGET_OS_OSX
-  v.clipsToBounds = YES;
-#endif
-  return v;
-}
-
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
-}
-
-RCT_EXPORT_VIEW_PROPERTY(mirror, BOOL)
-
-/**
- * In the fashion of
- * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
- * and https://www.w3.org/TR/html5/rendering.html#video-object-fit, resembles
- * the CSS style {@code object-fit}.
- */
-RCT_CUSTOM_VIEW_PROPERTY(objectFit, NSString *, RTCVideoView) {
-  NSString *s = [RCTConvert NSString:json];
-  RTCVideoViewObjectFit e
-    = (s && [s isEqualToString:@"cover"])
-      ? RTCVideoViewObjectFitCover
-      : RTCVideoViewObjectFitContain;
-
-  view.objectFit = e;
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(streamURL, NSString *, RTCVideoView) {
-    if (!json) {
-        view.videoTrack = nil;
-        return;
-    }
-
-    NSString *streamReactTag = (NSString *)json;
-    WebRTCModule *module = view.module;
-
-    dispatch_async(module.workerQueue, ^{
-        RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
-        NSArray *videoTracks = stream ? stream.videoTracks : @[];
-        RTCVideoTrack *videoTrack = [videoTracks firstObject];
-        if (!videoTrack) {
-            RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                view.videoTrack = videoTrack;
-            });
-        }
-    });
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-    return NO;
 }
 
 @end
