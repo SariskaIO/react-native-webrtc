@@ -23,5 +23,6 @@
  */
 - (void)setObjectFit:(NSString *)objectFit;
 - (void)setMirror:(BOOL)mirror;
+- (RTCVideoTrack *)getVideoTrack;
 
 @end

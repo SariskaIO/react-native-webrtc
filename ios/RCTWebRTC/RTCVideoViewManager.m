@@ -7,8 +7,6 @@
 //
 #import <AVFoundation/AVFoundation.h>
 #import <objc/runtime.h>
-
-
 #import <React/RCTLog.h>
 #if !TARGET_OS_OSX
 #import <WebRTC/RTCEAGLVideoView.h>
@@ -20,19 +18,19 @@
 #import <WebRTC/RTCMTLNSVideoView.h>
 #endif
 #import <WebRTC/RTCVideoTrack.h>
-
 #import "WebRTCModule.h"
-#import "Enum.h"
+#import "Enum.h"  
 #import <React/RCTBridge.h>
 #import "RTCVideoView+Private.h"
 #import "Enum.h"
-
+#import "SariskaRTCVideoRenderer.h"
 
 @implementation RTCVideoView {
   /**
    * The width and height of the video (frames) rendered by {@link #subview}.
    */
   CGSize _videoSize;
+    SariskaRTCVideoRenderer* renderer;
 }
 
 
@@ -53,7 +51,7 @@
   if (videoTrack) {
     if (self.window) {
       dispatch_async(_module.workerQueue, ^{
-        [videoTrack addRenderer:self.videoView];
+        [videoTrack addRenderer:renderer];
       });
     } else {
       dispatch_async(_module.workerQueue, ^{
@@ -248,6 +246,10 @@
   }
 }
 
+-(RTCVideoTrack *) getVideoTrack{
+    return self.videoTrack;
+}
+
 /**
  * Implements the setter of the {@link #videoTrack} property of this
  * {@code RTCVideoView}.
@@ -283,7 +285,7 @@
     // of its videoTrack only while this view resides in a window.
     if (videoTrack && self.window) {
         dispatch_async(_module.workerQueue, ^{
-            [videoTrack addRenderer:self.videoView];
+            [videoTrack addRenderer:renderer];
         });
     }
   }
