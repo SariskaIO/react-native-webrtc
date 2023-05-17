@@ -81,7 +81,7 @@ public class GetUserMediaImpl {
         addEventListenerToActivity(reactContext);
     }
 
-    public static setMediaData(Intent data){
+    public static void setMediaData(Intent data){
         mediaProjectionPermissionResultData = data;
     }
 
