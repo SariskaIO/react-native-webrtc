@@ -30,7 +30,7 @@ import org.webrtc.*;
  * The implementation of {@code getUserMedia} extracted into a separate file in
  * order to reduce complexity and to (somewhat) separate concerns.
  */
-class GetUserMediaImpl {
+public class GetUserMediaImpl {
     /**
      * The {@link Log} tag with which {@code GetUserMediaImpl} is to log.
      */
@@ -79,6 +79,10 @@ class GetUserMediaImpl {
 
 
         addEventListenerToActivity(reactContext);
+    }
+
+    public static setMediaData(Intent data){
+        mediaProjectionPermissionResultData = data;
     }
 
     private void addEventListenerToActivity(ReactApplicationContext reactContext) {
@@ -374,7 +378,7 @@ class GetUserMediaImpl {
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         ScreenCaptureController screenCaptureController
-            = new ScreenCaptureController(reactContext.getCurrentActivity(), width, height, currentActivity.getDataIntent());
+            = new ScreenCaptureController(reactContext.getCurrentActivity(), width, height, mediaProjectionPermissionResultData);
         return createVideoTrack(screenCaptureController);
     }
 
