@@ -40,6 +40,8 @@ class GetUserMediaImpl {
 
     private final CameraEnumerator cameraEnumerator;
     private final ReactApplicationContext reactContext;
+    private Activity currentActivity;
+
 
     /**
      * The application/library-specific private members of local
@@ -258,7 +260,7 @@ class GetUserMediaImpl {
             return;
         }
 
-        Activity currentActivity = this.reactContext.getCurrentActivity();
+        this.currentActivity = this.reactContext.getCurrentActivity();
         if (currentActivity == null) {
             promise.reject(new RuntimeException("No current Activity."));
             return;
@@ -372,7 +374,7 @@ class GetUserMediaImpl {
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         ScreenCaptureController screenCaptureController
-            = new ScreenCaptureController(reactContext.getCurrentActivity(), width, height, mediaProjectionPermissionResultData);
+            = new ScreenCaptureController(reactContext.getCurrentActivity(), width, height, currentActivity.getDataIntent());
         return createVideoTrack(screenCaptureController);
     }
 
