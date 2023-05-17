@@ -51,7 +51,7 @@ class GetUserMediaImpl {
     private final WebRTCModule webRTCModule;
 
     private Promise displayMediaPromise;
-    private Intent mediaProjectionPermissionResultData;
+    public static Intent mediaProjectionPermissionResultData;
 
     GetUserMediaImpl(WebRTCModule webRTCModule, ReactApplicationContext reactContext) {
         this.webRTCModule = webRTCModule;
@@ -285,7 +285,6 @@ class GetUserMediaImpl {
                         public void run() {
                             // code to be executed after 10 seconds
                             System.out.println("Inside new handle");
-                            mediaProjectionPermissionResultData = projectionIntent;
                             createScreenStream();
                         }
                     }, 10000);
