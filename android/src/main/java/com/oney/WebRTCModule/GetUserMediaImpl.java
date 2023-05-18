@@ -270,8 +270,6 @@ public class GetUserMediaImpl {
             return;
         }
 
-        addEventListenerToActivity(reactContext);
-
         this.displayMediaPromise = promise;
 
         MediaProjectionManager mediaProjectionManager =
@@ -289,11 +287,10 @@ public class GetUserMediaImpl {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            // code to be executed after 10 seconds
-                            System.out.println("Inside new handle");
+                            // code to be executed after 3 seconds to make sure permission data is updated
                             createScreenStream();
                         }
-                    }, 10000);
+                    }, 3000);
                 }
             });
 
@@ -304,7 +301,6 @@ public class GetUserMediaImpl {
 
     private void createScreenStream() {
         VideoTrack track = createScreenTrack();
-
         if (track == null) {
             displayMediaPromise.reject(new RuntimeException("ScreenTrack is null."));
         } else {
