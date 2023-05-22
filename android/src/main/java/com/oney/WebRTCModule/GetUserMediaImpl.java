@@ -27,12 +27,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+import android.os.Handler;
 /**
  * The implementation of {@code getUserMedia} extracted into a separate file in
  * order to reduce complexity and to (somewhat) separate concerns.
  */
-class GetUserMediaImpl {
+public class GetUserMediaImpl {
     /**
      * The {@link Log} tag with which {@code GetUserMediaImpl} is to log.
      */
@@ -42,6 +42,8 @@ class GetUserMediaImpl {
 
     private final CameraEnumerator cameraEnumerator;
     private final ReactApplicationContext reactContext;
+    private Activity currentActivity;
+
 
     /**
      * The application/library-specific private members of local
@@ -53,7 +55,7 @@ class GetUserMediaImpl {
     private final WebRTCModule webRTCModule;
 
     private Promise displayMediaPromise;
-    private Intent mediaProjectionPermissionResultData;
+    public static Intent mediaProjectionPermissionResultData;
 
     GetUserMediaImpl(WebRTCModule webRTCModule, ReactApplicationContext reactContext) {
         this.webRTCModule = webRTCModule;
@@ -77,6 +79,15 @@ class GetUserMediaImpl {
             cameraEnumerator = new Camera1Enumerator(false);
         }
 
+
+        addEventListenerToActivity(reactContext);
+    }
+
+    public static void setMediaData(Intent data){
+        mediaProjectionPermissionResultData = data;
+    }
+
+    private void addEventListenerToActivity(ReactApplicationContext reactContext) {
         reactContext.addActivityEventListener(new BaseActivityEventListener() {
             @Override
             public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -247,7 +258,7 @@ class GetUserMediaImpl {
             return;
         }
 
-        Activity currentActivity = this.reactContext.getCurrentActivity();
+        this.currentActivity = this.reactContext.getCurrentActivity();
         if (currentActivity == null) {
             promise.reject(new RuntimeException("No current Activity."));
             return;
@@ -263,8 +274,17 @@ class GetUserMediaImpl {
             UiThreadUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    currentActivity.startActivityForResult(
+                    Intent projectionIntent = mediaProjectionManager.createScreenCaptureIntent();
+                    currentActivity.startActivityForResult
                             mediaProjectionManager.createScreenCaptureIntent(), PERMISSION_REQUEST_CODE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // code to be executed after 3 seconds to make sure permission data is updated
+                            createScreenStream();
+                        }
+                    }, 3000);
                 }
             });
 
@@ -275,7 +295,6 @@ class GetUserMediaImpl {
 
     private void createScreenStream() {
         VideoTrack track = createScreenTrack();
-
         if (track == null) {
             displayMediaPromise.reject(new RuntimeException("ScreenTrack is null."));
         } else {
