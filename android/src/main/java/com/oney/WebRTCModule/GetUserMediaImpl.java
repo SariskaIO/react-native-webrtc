@@ -274,8 +274,7 @@ public class GetUserMediaImpl {
             UiThreadUtil.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Intent projectionIntent = mediaProjectionManager.createScreenCaptureIntent();
-                    currentActivity.startActivityForResult
+                    currentActivity.startActivityForResult(
                             mediaProjectionManager.createScreenCaptureIntent(), PERMISSION_REQUEST_CODE);
 
                     new Handler().postDelayed(new Runnable() {
