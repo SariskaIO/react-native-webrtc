@@ -1,4 +1,3 @@
-
 import ScreenCapturePickerView from './ScreenCapturePickerView';
 import RTCPeerConnection from './RTCPeerConnection';
 import RTCIceCandidate from './RTCIceCandidate';
@@ -22,19 +21,19 @@ export {
     registerGlobals
 };
 
-function registerGlobals() {
+function registerGlobals(): void {
     // Should not happen. React Native has a global navigator object.
-    if (typeof navigator !== 'object') {
+    if (typeof global.navigator !== 'object') {
         throw new Error('navigator is not an object');
     }
 
-    if (!navigator.mediaDevices) {
-        navigator.mediaDevices = {};
+    if (!global.navigator.mediaDevices) {
+        global.navigator.mediaDevices = {};
     }
 
-    navigator.mediaDevices.getUserMedia = mediaDevices.getUserMedia.bind(mediaDevices);
-    navigator.mediaDevices.getDisplayMedia = mediaDevices.getDisplayMedia.bind(mediaDevices);
-    navigator.mediaDevices.enumerateDevices = mediaDevices.enumerateDevices.bind(mediaDevices);
+    global.navigator.mediaDevices.getUserMedia = mediaDevices.getUserMedia.bind(mediaDevices);
+    global.navigator.mediaDevices.getDisplayMedia = mediaDevices.getDisplayMedia.bind(mediaDevices);
+    global.navigator.mediaDevices.enumerateDevices = mediaDevices.enumerateDevices.bind(mediaDevices);
 
     global.RTCPeerConnection = RTCPeerConnection;
     global.RTCIceCandidate = RTCIceCandidate;

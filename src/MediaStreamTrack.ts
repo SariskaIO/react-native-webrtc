@@ -11,15 +11,14 @@ const MEDIA_STREAM_TRACK_EVENTS = ['ended', 'mute', 'unmute'];
 type MediaStreamTrackState = 'live' | 'ended';
 
 class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVENTS) {
-    _constraints: Object;
+    _constraints: object;
     _enabled: boolean;
-    _settings: Object;
+    _settings: object;
+    _muted: boolean;
 
     id: string;
     kind: string;
     label: string;
-    muted: boolean;
-    // readyState in java: INITIALIZING, LIVE, ENDED, FAILED
     readyState: MediaStreamTrackState;
     remote: boolean;
 
@@ -29,11 +28,11 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         this._constraints = info.constraints || {};
         this._enabled = info.enabled;
         this._settings = info.settings || {};
+        this._muted = false;
 
         this.id = info.id;
         this.kind = info.kind;
         this.label = info.label;
-        this.muted = false;
         this.remote = info.remote;
 
         const _readyState = info.readyState.toLowerCase();
@@ -44,16 +43,19 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         return this._enabled;
     }
 
-    set enabled(enabled: boolean): void {
+    set enabled(enabled: boolean) {
         if (enabled === this._enabled) {
             return;
         }
         WebRTCModule.mediaStreamTrackSetEnabled(this.id, !this._enabled);
         this._enabled = !this._enabled;
-        this.muted = !this._enabled;
     }
 
-    stop() {
+    get muted(): boolean {
+        return this._muted;
+    }
+
+    stop(): void {
         WebRTCModule.mediaStreamTrackSetEnabled(this.id, false);
         this.readyState = 'ended';
         // TODO: save some stopped flag?
@@ -66,7 +68,7 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
      * This is how the reference application (AppRTCMobile) implements camera
      * switching.
      */
-    _switchCamera() {
+    _switchCamera(): void {
         if (this.remote) {
             throw new Error('Not implemented for remote tracks');
         }
@@ -76,15 +78,15 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         WebRTCModule.mediaStreamTrackSwitchCamera(this.id);
     }
 
-    applyConstraints() {
+    applyConstraints(): never {
         throw new Error('Not implemented.');
     }
 
-    clone() {
+    clone(): never {
         throw new Error('Not implemented.');
     }
 
-    getCapabilities() {
+    getCapabilities(): never {
         throw new Error('Not implemented.');
     }
 
@@ -96,7 +98,7 @@ class MediaStreamTrack extends defineCustomEventTarget(...MEDIA_STREAM_TRACK_EVE
         return deepClone(this._settings);
     }
 
-    release() {
+    release(): void {
         WebRTCModule.mediaStreamTrackRelease(this.id);
     }
 }
