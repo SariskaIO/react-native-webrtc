@@ -1,6 +1,6 @@
 # react-native-webrtc
 
-## Note: The master branch runs on version M94 which is the older stable version. Android and iOS SDKs are currently running on M111 which can be found under the branch "ios".
+## Note: The master branch runs on version M94 which is the older stable version. Android and iOS SDKs are currently running on M111 which can be found under the branch "new".
 
 [![npm version](https://badge.fury.io/js/react-native-webrtc.svg)](https://badge.fury.io/js/react-native-webrtc)
 [![npm downloads](https://img.shields.io/npm/dm/react-native-webrtc.svg?maxAge=2592000)](https://img.shields.io/npm/dm/react-native-webrtc.svg?maxAge=2592000)
