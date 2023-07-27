@@ -239,6 +239,34 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
     }
 }
 
+
+/**
+Implements the setter of the Stream URL property of this code
+**/
+
+- (void)setStreamURL:(NSString *)streamURL bridge: (RCTBridge *) bridge {
+        if (!streamURL) {
+            self.videoTrack = nil;
+            return;
+        }
+        NSString *streamReactTag = (NSString *)streamURL;
+        WebRTCModule *module = [bridge moduleForName:@"WebRTCModule"];
+        _module = module;
+        NSLog(@"%@",module.workerQueue);
+        dispatch_async(module.workerQueue, ^{
+            RTCMediaStream *stream = [module streamForReactTag:streamReactTag];
+            NSArray *videoTracks = stream ? stream.videoTracks : @[];
+            RTCVideoTrack *videoTrack = [videoTracks firstObject];
+            if (!videoTrack) {
+                RCTLogWarn(@"No video stream for react tag: %@", streamReactTag);
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.videoTrack = videoTrack;
+                });
+            }
+        });
+     }
+
 /**
  * Implements the setter of the {@link #objectFit} property of this
  * {@code RTCVideoView}.
